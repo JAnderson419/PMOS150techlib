@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>PMOS150 DRC</description>
+ <version/>
+ <category>drc</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <shortcut/>
+ <show-in-menu>true</show-in-menu>
+ <group-name>drc_scripts</group-name>
+ <menu-path>tools_menu.drc.end</menu-path>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text>
+# Read about DRC scripts in the User Manual in "Design Rule Check (DRC)"
+# RIT PMOS150 DRC v1
+# JDA 09/2025
+# Based on RIT_PMOS_DesignManual.pdf, L. Fuller, March 2015
+
+# Known Issues:
+# pc_scpace, cc_space, m1_space checks not exact - undersized slightly to avoid shapes touching when just passing spacing rules
+
+report("PMOS150 DRC")
+
+u = 10.um
+
+rx = input(1,0)
+pc = input(2,0)
+cc = input(3,0)
+m1 = input(4,0)
+
+
+rx_w = rx.width(10.um).output("diffusion_width", "Diffusion width below 10 um minimum")
+rx.sized(0.999*u).merged(2).output("diffusion_space", "Diffusion must be spaced 20 um apart.")
+
+pc.width(u).output("pc_width", "Thin Oxide width below10 um minimum")
+pc.sized(0.499*u).merged(2).output("pc_space", "Thin Oxide must be spaced 10 um apart.")
+
+cc.width(u).output("cc_width", "Contact Cut width below 10 um minimum")
+cc.sized(0.499*u).merged(2).output("cc_space", "Contact Cut  must be spaced 10 um apart.")
+
+m1.width(3*u).output("m1_width", "Metal width below 30 um minimum")
+m1.sized(0.499*u).merged(2).output("m1_space", "Metal must be spaced 10 um apart.")
+
+cc.sized(1*u).not_inside(m1).output("cc_m1_ov", "Contact must be enclosed by 10 um of metal.")
+cc.sized(1*u).not_inside(rx).output("cc_rx_ov", "Contact must be enclosed by 10 um of diffusion.")</text>
+</klayout-macro>
